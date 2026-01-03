@@ -1,0 +1,1 @@
+cd build && are-linux-arm64.exe ../program.as
