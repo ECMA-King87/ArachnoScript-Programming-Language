@@ -1,0 +1,16 @@
+
+
+component Button
+{
+  spawn i = 0;
+}
+```
+<button>${i}$</button>
+```
+
+component Home
+```
+<div>Yo, <Button /></div>
+```
+
+route "/" Home
