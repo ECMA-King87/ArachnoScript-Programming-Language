@@ -1,1 +1,1 @@
-cd build && chmod +x are-macos-amd64.exe ../program.as
+cd build && chmod +x are-macos-amd64 ../program.as

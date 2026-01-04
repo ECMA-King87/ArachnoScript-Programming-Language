@@ -1,1 +1,1 @@
-cd build && are-macos-arm64.exe ../program.as
+cd build && are-macos-arm64 ../program.as
