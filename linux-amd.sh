@@ -1,1 +1,1 @@
-cd build && are-linux-amd64.exe ../program.as
+cd build chmod +x && are-linux-amd64.exe ../program.as

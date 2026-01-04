@@ -1,2 +1,2 @@
 @ECHO OFF
-cd build && are-macos-arm64.exe ../program.as
+cd build && chmod +x are-macos-arm64.exe ../program.as

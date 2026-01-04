@@ -1,2 +1,0 @@
-@ECHO OFF
-cd build && are-macos-amd64.exe ../program.as

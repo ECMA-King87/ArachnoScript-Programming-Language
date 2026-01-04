@@ -1,1 +1,1 @@
-cd build && are-linux-arm64.exe ../program.as
+cd build && chmod +x are-linux-arm64.exe ../program.as
