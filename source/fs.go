@@ -3,7 +3,8 @@ package main
 import "os"
 
 func pathExists(path string) bool {
-	_, err := os.Open(path)
+	f, err := os.Open(path)
+	f.Close()
 	return err == nil
 }
 

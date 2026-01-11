@@ -1920,11 +1920,7 @@ func (r *Interpreter) exp(v1, v2 any, env *Environment, pos Pos) float64 {
 	if !ok || !v2ok {
 		env.ThrowTypeError(fmt.Sprintf("'**' operation between type %T and %T is invalid.%s", v1, v2, SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
 	}
-	p := int(f2)
-	for i := p; i <= p; i++ {
-		value *= value
-	}
-	return float64(value)
+	return math.Pow(value, f2)
 }
 
 // #region Runtime Func

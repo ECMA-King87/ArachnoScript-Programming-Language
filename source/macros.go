@@ -496,23 +496,51 @@ func init() {
 	}))
 	macros.set("#_date", MK_MACRO("#_date", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
 		now := time.Now()
-		date := map[string]int{
-			"getHour":        now.Hour(),
-			"getMonth":       int(now.Month()),
-			"getDay":         now.Day(),
-			"getMinute":      now.Minute(),
-			"getSecond":      now.Second(),
-			"getYear":        now.Year(),
-			"getMillisecond": now.Nanosecond() / 1_000_000,
-			"getWeekDay":     int(now.Weekday()),
+		date := [...]*Macro{
+			MK_MACRO("getHour", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Hour()))
+			}),
+			MK_MACRO("getMonth", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Month()))
+			}),
+			MK_MACRO("getDay", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Day()))
+			}),
+			MK_MACRO("getMinute", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Minute()))
+			}),
+			MK_MACRO("getSecond", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Second()))
+			}),
+			MK_MACRO("getYear", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Year()))
+			}),
+			MK_MACRO("getMillisecond", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Nanosecond() / 1_000_000))
+			}),
+			MK_MACRO("getNanosecond", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Nanosecond()))
+			}),
+			MK_MACRO("getWeekDay", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+				return MK_NUMBER(float64(now.Weekday()))
+			}),
 		}
 		props := NewMap[RuntimeVal, string]()
-		for k, v := range date {
+		for _, m := range date {
 			ml := GenerateRadix(16)
-			Memory.set(ml, MK_NUMBER(float64(v)))
-			props.set(MK_STRING(k), ml)
+			Memory.set(ml, m)
+			props.set(MK_STRING(m.name), ml)
 		}
 		return MK_OBJECT(props, nil, nil)
+	}))
+	var bench time.Time
+	macros.set("#_bench_start", MK_MACRO("#_bench_start", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+		bench = time.Now()
+		return MK_UD()
+	}))
+	macros.set("#_bench_end", MK_MACRO("#_bench_end", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
+		println(time.Since(bench))
+		return MK_UD()
 	}))
 	parse_method_mem_loc := GenerateRadix(16)
 	macros.set("#_new_parser", MK_MACRO("#_new_parser", func(args []RuntimeVal, env *Environment, pos Pos, r *Interpreter) RuntimeVal {
@@ -667,7 +695,7 @@ func init() {
 		if !ok {
 			env.throwError([]string{"#_run_as_script expects it's 1st argument to be of type (string)", SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")})
 		}
-		RunScript(path.value, env)
+		RunScript(path.value)
 		return undefined
 	}))
 	macros.set("#_start_repl", MK_MACRO("#_start_repl", func(_ []RuntimeVal, _ *Environment, _ Pos, _ *Interpreter) RuntimeVal {

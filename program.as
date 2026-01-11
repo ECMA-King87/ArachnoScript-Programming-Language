@@ -1,7 +1,6 @@
-spawn server = new http.Server();
-
-server.HandleFunc("/{id}", function (w, r) {
-  w.writeString(r.pathValue("id"));
-})
-
-server.listenAndServe();
+var loop = 10 ** 4;
+Console.log(loop);
+#_bench_start()
+for (i = 0; i < loop; i++) {
+}
+#_bench_end()

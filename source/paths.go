@@ -6,10 +6,14 @@ import (
 )
 
 func RealPath(path string) string {
-	full_path, err := filepath.Abs(path)
-	if err != nil {
-		panic(err)
+	if !IsAbs(path) {
+		var err error
+		path, err = filepath.Abs(path)
+		if err != nil {
+			panic(err)
+		}
 	}
+	full_path := path
 	if !pathExists(full_path) {
 		panic("the system could not find the path specified: " + path)
 	}

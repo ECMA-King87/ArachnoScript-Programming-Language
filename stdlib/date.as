@@ -28,39 +28,46 @@ class Date {
   constructor() {}
 
   function getYear() {
-    return #_date().getYear
+    return #_date().getYear()
   }
   function getMonth() {
-    return #_date().getMonth
+    return #_date().getMonth()
   }
   function getDay() {
-    return #_date().getDay
+    return #_date().getDay()
   }
   function getHours() {
-    return #_date().getHour
+    return #_date().getHour()
   }
   function getMinutes() {
-    return #_date().getMinute
+    return #_date().getMinute()
   }
   function getSeconds() {
-    return #_date().getSecond
+    return #_date().getSecond()
   }
   function getMilliseconds() {
-    return #_date().getMillisecond
+    return #_date().getMillisecond()
   }
 
   function dateToString() {
     spawn { getYear: year, getMonth: month, getDay: day, getWeekDay: weekDay } = #_date()
-    return  weekDays[weekDay - 1] + ", " + day + " " + longMonthNames[month - 1] + " " + year;
+    return weekDays[weekDay() - 1] + ", " + day() + " " + longMonthNames[month() - 1] + " " + year();
   }
 
   function toString() {
-    spawn { getYear: year, getMonth: month, getDay: day, 
-    getMinute: minute, getHour: hour, getSecond: second } = #_date()
-    return year + "/" + month + "/" + day + " " + hour + ":" + minute + ":" + second
+    spawn { getYear, getMonth, getDay, getMinute, getHour, getSecond } = #_date()
+    spawn second = getSecond();
+    spawn minute = getMinute();
+    spawn hour = getHour();
+    spawn day = getDay();
+    spawn month = getMonth();
+    spawn year = getYear();
+    return (day < 10 ? "0"+day : day) + "/" + (month < 10 ? "0"+month : month) + "/" + year + " " + (hour < 10 ? "0"+hour : hour) + ":" + (minute < 10 ? "0"+minute : minute) + ":" + (second < 10 ? "0"+second : second)
   }
 
   function [#_symbol_for("debug")]() {
     return this.toString()
   }
 }
+
+Date.now = function () { return #_time_now() }
