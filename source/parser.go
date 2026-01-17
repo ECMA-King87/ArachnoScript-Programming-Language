@@ -1052,6 +1052,9 @@ func (p *Parser) parse_stmt() Node {
 		return p.parse_export_stmt()
 	case "switch":
 		return p.parse_switch_stmt()
+	case TokenType["SemiColon"]:
+		p.throwUnexpectedTokenError(p.at(0))
+		return nil
 	case
 		TokenType["Var"],
 		TokenType["Immortal"],
@@ -2145,7 +2148,7 @@ func (p *Parser) parse_additive_expr() Node {
 			op,
 			getPosFromNode(left),
 		}
-		if p.eatSemiColon() {
+		if p.IsAt(TokenType["SemiColon"]) {
 			return left
 		}
 	}
@@ -2163,7 +2166,7 @@ func (p *Parser) parse_multiplicative_expr() Node {
 			op,
 			getPosFromNode(left),
 		}
-		if p.eatSemiColon() {
+		if p.IsAt(TokenType["SemiColon"]) {
 			return left
 		}
 	}

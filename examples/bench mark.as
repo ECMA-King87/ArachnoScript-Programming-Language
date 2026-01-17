@@ -4,7 +4,7 @@
   #_bench_start()
   do {
     loop++
-  } while (loop < 10 ** 3)
+  } while (loop < 1000)
   #_bench_end()
   Console.log("looped", loop, "times");
 }
@@ -13,7 +13,7 @@
   Console.log("------------------ while --------------------");
   var loop = 0;
   #_bench_start()
-  while (loop < 10 ** 3) {
+  while (loop < 1000) {
     loop++
   }
   #_bench_end()
@@ -24,7 +24,7 @@
   Console.log("------------------ for --------------------");
   var loop = 0;
   #_bench_start()
-  for (i = 0; i <= (10 ** 3); i++) {
+  for (i = 0; i <= 1000; i++) {
     loop = i;
   }
   #_bench_end()
@@ -33,7 +33,7 @@
 
 spawn object = {};
 #_bench_start()
-for (i = 0; i < 10 ** 3; i++) {
+for (i = 0; i < 1000; i++) {
   object[i] = null;
 }
 #_print("created object in ");

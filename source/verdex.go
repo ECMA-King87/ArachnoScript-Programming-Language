@@ -29,12 +29,12 @@ type ASXNode interface {
 
 type Attr struct {
 	name  string
-	value Node
+	value any
 }
 
 type Element struct {
 	tagName  string
-	attr     *Map[string, Attr]
+	attr     []Attr
 	children []ASXNode
 }
 
@@ -264,14 +264,41 @@ func (m *ASXModule) isText(i uint) bool {
 	return !match
 }
 
-func (m *ASXModule) parse_open_tag() (string, *Map[string, Attr]) {
+func (m *ASXModule) parse_open_tag() (string, []Attr) {
 	p := m.parser
 	m.expect("<")
 	tagName := "div"
 	tagName = p.expect(TokenType["Identifier"]).src
-	attributes := &Map[string, Attr]{}
+	attributes := NewMap[string, any]()
+	for p.not_eof() && p.at(0).src != ">" {
+		key := p.expect(TokenType["Identifier"]).src
+		var value any = nil
+		if p.at(0).src == "=" {
+			p.eat()
+			if p.IsAt("${") {
+				value = m.parse_asx_node()
+			} else {
+				tk := p.at(0)
+				value = p.parse_primary_expr()
+				switch value.(type) {
+				case *String:
+					break
+				default:
+					p.throwUnexpectedTokenError(tk)
+				}
+			}
+		}
+		attributes.set(key, value)
+	}
 	m.expect(">")
-	return tagName, attributes
+	attrs := []Attr{}
+	attributes.forEach(func(key string, value any) {
+		attrs = append(attrs, Attr{
+			name:  key,
+			value: value,
+		})
+	})
+	return tagName, attrs
 }
 
 func (m *ASXModule) parse_close_tag(tagName string) {
@@ -337,7 +364,23 @@ func (p *ASXParser) CompileTemplate(template ASXNode) (string, string) {
 	case *ComponentCall:
 		compiled = "${" + t.name + "().render()}"
 	case *Element:
-		compiled = "<" + t.tagName + ">"
+		compiled = "<" + t.tagName
+		for _, attr := range t.attr {
+			compiled += " " + attr.name
+			if attr.value != nil {
+				compiled += "="
+				value, ok := attr.value.(*String)
+				if ok {
+					compiled += p.CompileAS(value)
+					} else {
+					value, _ := attr.value.(*Interpolation)
+					t, b := p.CompileTemplate(value)
+					compiled += t
+					bindings += b
+				}
+			}
+		}
+		compiled += ">"
 		for i := 0; i < len(t.children); i++ {
 			template, b := p.CompileTemplate(t.children[i])
 			compiled += template

@@ -21,7 +21,6 @@ func init() {
 				print(" ")
 			}
 		}
-		println()
 		return undefined
 	}))
 	macros.set("#_symbol", MK_MACRO("#_symbol", func(args []RuntimeVal, env *Environment, pos Pos, _ *Interpreter) RuntimeVal {
@@ -647,6 +646,9 @@ func init() {
 	}))
 	macros.set("#_import_meta_path", MK_MACRO("#_import_meta_path", func(_ []RuntimeVal, env *Environment, _ Pos, _ *Interpreter) RuntimeVal {
 		return MK_STRING(env.sourcePath)
+	}))
+	macros.set("#_script_path", MK_MACRO("#_script_path", func(_ []RuntimeVal, env *Environment, _ Pos, _ *Interpreter) RuntimeVal {
+		return MK_STRING(_script_path)
 	}))
 	macros.set("#_as_absolute_path", MK_MACRO("#_as_absolute_path", func(args []RuntimeVal, env *Environment, pos Pos, _ *Interpreter) RuntimeVal {
 		if len(args) < 1 {

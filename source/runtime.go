@@ -9,6 +9,8 @@ import (
 	"strconv"
 )
 
+var _script_path = ""
+
 //#region Memory
 
 // key / value map for storing the reference and values of variables
@@ -143,6 +145,7 @@ func (r *Interpreter) Evaluate(node Node, env *Environment) RuntimeVal {
 
 func (r *Interpreter) EvalProgram(p *Program, env *Environment) *ObjectVal {
 	ud_ref = GetUDRef(r)
+	_script_path = p.sourcePath
 	// sync code
 	r.EvalBlock(p.body, env)
 	// micro tasks
@@ -1092,8 +1095,6 @@ func (r *Interpreter) Eval_call_expr(expr *CallExpr, env *Environment) RuntimeVa
 	return rv
 }
 
-// func ExecAsyncFunc(fn *FunctionVal, env *Environment, r *Interpreter) *Instance {}
-
 func CallFunction(value RuntimeVal, env *Environment, args []RuntimeVal, r *Interpreter, pos Pos) (RuntimeVal, *Environment) {
 	switch v := value.(type) {
 	case *FunctionVal:
@@ -1782,26 +1783,72 @@ func (r *Interpreter) Eval_binary_expr(expr *BinaryExpr, env *Environment) Runti
 			value = &NumberVal{v}
 		}
 	case "-":
-		v := r.sub(env, pos, lhs, rhs)
-		value = &NumberVal{v}
+		if f1, ok1 := lhs.(float64); ok1 {
+			if f2, ok2 := rhs.(float64); ok2 {
+				value = &NumberVal{f1 - f2}
+			} else {
+				env.ThrowTypeError(fmt.Sprintf("'-' operation between type %s and %s is invalid.%s", ValueType(v1), ValueType(v2), SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
+			}
+		} else {
+			env.ThrowTypeError(fmt.Sprintf("'-' operation between type %s and %s is invalid.%s", ValueType(v1), ValueType(v2), SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
+		}
 	case "*":
-		v := r.mul(env, pos, lhs, rhs)
-		value = &NumberVal{v}
+		if f1, ok1 := lhs.(float64); ok1 {
+			if f2, ok2 := rhs.(float64); ok2 {
+				value = &NumberVal{f1 * f2}
+			} else {
+				env.ThrowTypeError(fmt.Sprintf("'*' operation between type %s and %s is invalid.%s", ValueType(v1), ValueType(v2), SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
+			}
+		} else {
+			env.ThrowTypeError(fmt.Sprintf("'*' operation between type %s and %s is invalid.%s", ValueType(v1), ValueType(v2), SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
+		}
 	case "/":
-		v := r.div(env, pos, lhs, rhs)
-		value = &NumberVal{v}
+		if f1, ok1 := lhs.(float64); ok1 {
+			if f2, ok2 := rhs.(float64); ok2 {
+				if f2 == 0 {
+					env.throwError([]string{"Division by zero"}, pos, env.sourcePath)
+				}
+				value = &NumberVal{f1 / f2}
+			} else {
+				env.ThrowTypeError("'/' operation between type", ValueType(v1), "and", ValueType(v2), "is invalid."+SourceLog(pos.line, pos.col, pos.count, env.sourcePath, ""))
+			}
+		} else {
+			env.ThrowTypeError("'/' operation between type", ValueType(v1), "and", ValueType(v2), "is invalid."+SourceLog(pos.line, pos.col, pos.count, env.sourcePath, ""))
+		}
 	case "%":
-		v := r.mod(env, pos, lhs, rhs)
-		value = &NumberVal{v}
+		if f1, ok1 := lhs.(float64); ok1 {
+			if f2, ok2 := rhs.(float64); ok2 {
+				if f2 == 0 {
+					env.throwError([]string{"Modulo by zero"}, pos, env.sourcePath)
+				}
+				value = &NumberVal{math.Mod(f1, f2)}
+			} else {
+				env.ThrowTypeError("'%%' operation between type", ValueType(v1), "and", ValueType(v2), "is invalid."+SourceLog(pos.line, pos.col, pos.count, env.sourcePath, ""))
+			}
+		} else {
+			env.ThrowTypeError("'%%' operation between type", ValueType(v1), "and", ValueType(v2), "is invalid."+SourceLog(pos.line, pos.col, pos.count, env.sourcePath, ""))
+		}
 	case "**":
-		v := r.exp(lhs, rhs, env, pos)
-		value = &NumberVal{v}
+		if f1, ok1 := lhs.(float64); ok1 {
+			if f2, ok2 := rhs.(float64); ok2 {
+				value = &NumberVal{math.Pow(f1, f2)}
+			} else {
+				env.ThrowTypeError(fmt.Sprintf("'**' operation between type %s and %s is invalid.%s", ValueType(v1), ValueType(v2), SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
+			}
+		} else {
+			env.ThrowTypeError(fmt.Sprintf("'**' operation between type %s and %s is invalid.%s", ValueType(v1), ValueType(v2), SourceLog(pos.line, pos.col, pos.count, env.sourcePath, "")))
+		}
 	}
 	return value
 }
 
 // returns (string | float64)
 func (r *Interpreter) add(n1, n2 any, t1, t2 string, pos Pos, env *Environment) any {
+	if f1, ok1 := n1.(float64); ok1 {
+		if f2, ok2 := n2.(float64); ok2 {
+			return f1 + f2
+		}
+	}
 	value := ""
 	found_string := false
 	switch v := n1.(type) {

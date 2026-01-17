@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 var TokenType = map[string]string{
@@ -116,6 +117,53 @@ var TokenSpecs []Spec = []Spec{
 	// {regexp.MustCompile(`^\$.*(?:\$|$)`), TokenType["Comment"]},
 }
 
+var Keywords = map[string]bool{
+	"var":         true,
+	"spawn":       true,
+	"immortal":    true,
+	"static":      true,
+	"using":       true,
+	"function":    true,
+	"class":       true,
+	"constructor": true,
+	"if":          true,
+	"else":        true,
+	"break":       true,
+	"continue":    true,
+	"switch":      true,
+	"case":        true,
+	"default":     true,
+	"delete":      true,
+	"do":          true,
+	"while":       true,
+	"for":         true,
+	"throw":       true,
+	"return":      true,
+	"goto":        true,
+	"try":         true,
+	"catch":       true,
+	"finally":     true,
+	"private":     true,
+	"public":      true,
+	"extends":     true,
+	"async":       true,
+	"import":      true,
+	"export":      true,
+	"from":        true,
+	"as":          true,
+	"globalThis":  true,
+	"in":          true,
+	"of":          true,
+	"instanceof":  true,
+	"typeof":      true,
+	"void":        true,
+	"super":       true,
+	"new":         true,
+	"await":       true,
+	"go":          true,
+	"match":       true,
+}
+
 func Tokenize(source string, path string) *TokenArray {
 	tokens := tokenArray()
 	position, line, column := 0, 1, 1
@@ -142,13 +190,13 @@ top:
 					quote := source[position]
 					position++ // eat character
 					// remaining = source[position:]
-					_string := ""
+					var sb strings.Builder
 					for position < len(source) && source[position] != quote {
 						char := source[position]
 						position++ // eat character
-						_string += string(char)
+						sb.WriteByte(char)
 						if char == '\\' {
-							_string += string(source[position])
+							sb.WriteByte(source[position])
 							position++ // eat character
 						}
 					}
@@ -164,90 +212,31 @@ top:
 					// esc3 := regexp.MustCompile(`\\[4-7][0-7]?`)
 					// esc := regexp.MustCompile(`\\.`)
 					// dollar := regexp.MustCompile(`\\$`)
-					match.src = _string
+					match.src = sb.String()
 					match.typ = TokenType["String"]
 				} else if match.typ == TokenType["BTick"] {
 					quote := source[position]
 					position++ // eat character
-					template_string := ""
+					var sb strings.Builder
 					for position < len(source) && source[position] != quote {
 						char := source[position]
 						position++ // eat character
-						template_string += string(char)
+						sb.WriteByte(char)
 						if char == '\\' {
-							template_string += string(source[position])
+							sb.WriteByte(source[position])
 							position++ // eat character
 						}
 					}
 					if position >= len(source) || source[position] != quote {
 						throwMessage(SyntaxError("unclosed template literal:" + SourceLog(line, column, 1, path, "")))
 					}
-					match.src = template_string
+					match.src = sb.String()
 					match.typ = TokenType["TString"]
 				} else if match.typ == "comment" {
 					continue top
 				} else if match.typ == TokenType["Identifier"] {
-					keywords := []string{
-						// -- statements --
-						"var", // declarations ...
-						"spawn",
-						"immortal",
-						"static",
-						"using",
-						"function",
-						"class",
-						"constructor",
-						// "route",
-						// "component",
-						"if", // control flow ...
-						"else",
-						"break",
-						"continue",
-						"switch",
-						"case",
-						"default",
-						"delete", // operators ...
-						"do",     // loops ...
-						"while",
-						"for",
-						"throw", // ...
-						"return",
-						"goto",
-						"try", // error handling ...
-						"catch",
-						"finally",
-						// -- modifiers --
-						"private", // properties and methods ...
-						"public",
-						"default",
-						"static",
-						"extends", // classes
-						"async",   // functions
-						// -- modules --
-						"import",
-						"export",
-						"from",
-						"as",
-						// -- variables --
-						"globalThis",
-						// "this",
-						// -- expressions --
-						"in",
-						"of",
-						"instanceof",
-						"typeof",
-						"void",
-						"super",
-						"new",
-						"await",
-						"go",
-						"match",
-					}
-					for _, keyword := range keywords {
-						if keyword == match.src {
-							match.typ = keyword
-							break
-						}
+					if Keywords[match.src] {
+						match.typ = match.src
 					}
 				} else if is_value(match.typ, TokenType["White Space"], TokenType["Comment"]) {
 					position += match.length

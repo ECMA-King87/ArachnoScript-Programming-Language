@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"runtime/pprof"
 )
 
 var AS = []string{
@@ -39,6 +40,7 @@ func initialize() {
 			println("\x1b[35mError\x1b[0m: error creating temp directory")
 		} else {
 			println("directory created: temp")
+			tempDirCreated = true
 		}
 	} else {
 		tempDirCreated = true
@@ -103,6 +105,14 @@ var exec_path = RealPath(os.Args[0])
 
 func main() {
 	initialize()
+	f, err := os.Create("cpu.prof")
+	if err == nil {
+		pprof.StartCPUProfile(f)
+		defer func() {
+			pprof.StopCPUProfile()
+			f.Close()
+		}()
+	}
 	RunSTD("../stdlib/main.as")
 }
 

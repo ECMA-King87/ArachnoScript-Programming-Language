@@ -19,7 +19,10 @@ func (m *Map[K, V]) copy(from *Map[K, V]) *Map[K, V] {
 }
 
 func (m *Map[K, V]) delete(key K) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	delete(m._map, key)
+	m.length = len(m._map)
 }
 
 func (m *Map[K, V]) has(key K) bool {
