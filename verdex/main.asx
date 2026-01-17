@@ -5,7 +5,7 @@ component Button
   spawn i = 0;
 }
 ```
-<button>${i}$</button>
+<button style="color: blue">${i}$</button>
 ```
 
 component Home

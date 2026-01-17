@@ -407,13 +407,17 @@ ${./main.asx}$
 component Button {
   spawn i = 0;
 }
-
+` ` `
 <button>${i}$</button>
+` ` `
 
 component Home
-
+` ` `
 <div>Hello from ASX!</div>
 <Button />
+` ` `
+
+route "/" Home
 ```
 
 Open the printed address in your browser to see:

@@ -81,7 +81,7 @@ static spawn http = {
       }
     }
 
-    function HandleFunc(pattern, handler) {
+    function handleFunc(pattern, handler) {
       #_serve_mux_handle_func(this.mux, pattern, this.wrapFunc(handler))
     }
 

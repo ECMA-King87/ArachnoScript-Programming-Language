@@ -1,6 +1,7 @@
 static spawn Console = {
   log(...data) {
     #_print(...data)
+    #_print(characters.newline)
   }
 }
 
