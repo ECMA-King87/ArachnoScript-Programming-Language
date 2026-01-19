@@ -2,10 +2,10 @@
 
 component Button
 {
-  spawn i = 0;
+  spawn i = "super";
 }
 ```
-<button style="color: blue">${i}$</button>
+<button style=${"color: blue"}$>${i}$</button>
 ```
 
 component Home
