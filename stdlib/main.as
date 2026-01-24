@@ -1,4 +1,5 @@
 import "symbols.as"
+import "objects.as"
 import "date.as"
 import "io.as"
 import "code-points.as"

@@ -1,3 +1,6 @@
-immortal spawn app = new Verdex.WebApp("verdex/index.html");
+var array = new Array(1, 2, 3)
 
-app.run()
+var arr2 = array.fill(5)
+
+Console.log(arr2)
+Console.log(array)
