@@ -1,3 +1,9 @@
+The is the old repository.
+The new valid repository is at
+<https://github.com/ECMA-King87/ArachnoScript-Runtime-Engine-ARE-> but you may read these documentations.
+
+
+
 > ⚠️ License Note: ArachnoScript and its binaries may be used, shared, and modified
 > for personal, educational, or non-commercial purposes only. Commercial use,
 > sale, or distribution requires explicit written permission from the author.
