@@ -1,6 +1,7 @@
 The is the old repository.
+There is a more recent repository at <https://github.com/ECMA-King87/ArachnoScript-Runtime-Engine-ARE->.
 The new valid repository is at
-<https://github.com/ECMA-King87/ArachnoScript-Runtime-Engine-ARE-> but you may read these documentations.
+<https://github.com/ECMA-King87/ArachnoScript> but you may read these documentations.
 
 
 
