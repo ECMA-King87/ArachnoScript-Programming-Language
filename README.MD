@@ -112,33 +112,6 @@ message.then((value) => {
 $ .catch() and .finally() are currently unsupported.
 ```
 
-<h2>Object Semantics (Important Difference from JS)</h2>
-JavaScript passes object references by value, which allows mutation of the original object.
-ArachnoScript does not — by default.
-
-```js
-function SetObject(object) {
-  object = {};
-  Console.log(object); $ {}
-}
-
-spawn object = { key: "prop" };
-SetObject(object);
-Console.log(object); $ { key: "prop" }
-```
-
-Function parameters in AS are <b>deep-copied.</b>
-
-However:
-
-```js
-spawn object2 = object;
-object2.key = 10;
-Console.log(object); $ { key: 10 }
-```
-
-Assignments create shared references.
-
 <h2>Data Types</h2>
 
 ArachnoScript data types are not identical to JavaScript’s.
